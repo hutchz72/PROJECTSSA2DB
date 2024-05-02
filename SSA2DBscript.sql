@@ -1,8 +1,8 @@
 -- Create the new database if it does not exist
-CREATE DATABASE IF NOT EXISTS testdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS ssa2db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Switch to the newly created database
-USE testdb;
+USE ssa2db;
 
 -- Create the 'task' table
 CREATE TABLE IF NOT EXISTS `task` (
