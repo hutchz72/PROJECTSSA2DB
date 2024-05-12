@@ -39,18 +39,13 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 use ssa2db;
 -- status
 INSERT INTO ssa2db.status (id, statusName, statusDescription) VALUES
-(1, 'No Status', '
-The default status'),
+(1, 'No Status', 'The default status'),
 (2, 'To Do', null ),
-(3, 'Doing', '
-Being worked on'),
-(4, 'Done', '
-Finished'),
+(3, 'Doing', 'Being worked on'),
+(4, 'Done', 'Finished'),
 (5, 'Waiting', null),
-(6, '
-Maximum001Maximum002Maximum003Maximum004Maximum005', 'Maximum001Maximum002Maximum003Maximum004Maximum005Maximum006Maximum007Maximum008Maximum009Maximum100Maximum001Maximum002Maximum003Maximum004Maximum005Maximum006Maximum007Maximum008Maximum009Maximum200'),
-(7, '
-     _trim_     ', '    _trim_     ');
+(6, 'Maximum001Maximum002Maximum003Maximum004Maximum005', 'Maximum001Maximum002Maximum003Maximum004Maximum005Maximum006Maximum007Maximum008Maximum009Maximum100Maximum001Maximum002Maximum003Maximum004Maximum005Maximum006Maximum007Maximum008Maximum009Maximum200'),
+(7, '     _trim_     ', '    _trim_     ');
 
 -- taskv2
 insert INTO taskv2 (id, taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
