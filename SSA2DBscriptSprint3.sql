@@ -40,10 +40,10 @@ use ssa2db;
 -- status
 INSERT INTO ssa2db.status (id, statusName, statusDescription) VALUES
 (1, 'No Status', 'Task does not have any status'),
-(2, 'To Do', 'Task has been planned'),
+(2, 'To Do', null ),
 (3, 'Doing', 'Task is still doing'),
 (4, 'Done', 'Task has been completed'),
-(5, 'Waiting', 'Task has been planned'),
+(5, 'Waiting', null),
 (6, '
 Maximum001Maximum002Maximum003Maximum004Maximum005', 'Maximum001Maximum002Maximum003Maximum004Maximum005Maximum006Maximum007Maximum008Maximum009Maximum100Maximum001Maximum002Maximum003Maximum004Maximum005Maximum006Maximum007Maximum008Maximum009Maximum200'),
 (7, '
