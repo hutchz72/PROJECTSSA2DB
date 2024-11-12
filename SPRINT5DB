@@ -1,0 +1,108 @@
+-- Disable checks for schema modifications
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+-- Drop and create schema
+DROP SCHEMA IF EXISTS `ssa2db`;
+CREATE SCHEMA IF NOT EXISTS `ssa2db` DEFAULT CHARACTER SET utf8;
+USE `ssa2db`;
+-- Drop and create board table
+DROP TABLE IF EXISTS `ssa2db`.`board`;
+CREATE TABLE IF NOT EXISTS `ssa2db`.`board` (
+  `idboard` VARCHAR(10) NOT NULL,
+  `userId` VARCHAR(45) NULL,
+  `name` VARCHAR(120) NULL,
+  `unUseStatus` VARCHAR(50) NULL,
+  `createdOn` DATETIME NOT NULL,
+  `visibility` ENUM('PRIVATE', 'PUBLIC') NOT NULL DEFAULT 'PRIVATE',
+  PRIMARY KEY (`idboard`)
+) ENGINE = InnoDB;
+ 
+DROP TABLE IF EXISTS `ssa2db`.`attachment`;
+CREATE TABLE IF NOT EXISTS `ssa2db`.`attachment` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  `path` VARCHAR(255) NOT NULL,
+  `size` INT NOT NULL,
+  `createdOn` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `taskId` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_file_taskv3_idx` (`taskId` ASC),
+  CONSTRAINT `fk_file_taskv3`
+    FOREIGN KEY (`taskId`)
+    REFERENCES `ssa2db`.`taskv3` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+-- Drop and create status table
+DROP TABLE IF EXISTS `ssa2db`.`status`;
+CREATE TABLE IF NOT EXISTS `ssa2db`.`status` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `statusName` VARCHAR(50) NOT NULL,
+  `statusDescription` VARCHAR(200) NULL,
+  `limitMaximumTask` TINYINT(1) NULL,
+  `maxTaskLimit` INT NULL,
+  `boardId` VARCHAR(10) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_status_board1_idx` (`boardId` ASC),
+  CONSTRAINT `fk_status_board1`
+    FOREIGN KEY (`boardId`)
+    REFERENCES `ssa2db`.`board` (`idboard`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+-- Drop and create task table
+DROP TABLE IF EXISTS `ssa2db`.`taskv3`;
+CREATE TABLE IF NOT EXISTS `ssa2db`.`taskv3` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `taskTitle` VARCHAR(100) NOT NULL,
+  `taskDescription` VARCHAR(500) NULL,
+  `taskAssignees` VARCHAR(30) NULL,
+  `taskStatus` INT NOT NULL,
+  `createdOn` DATETIME NOT NULL,
+  `updatedOn` DATETIME NOT NULL,
+  `boardId` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_taskv3_board_idx` (`boardId` ASC),
+  INDEX `fk_taskv3_status1_idx` (`taskStatus` ASC),
+  CONSTRAINT `fk_taskv3_board`
+    FOREIGN KEY (`boardId`)
+    REFERENCES `ssa2db`.`board` (`idboard`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_taskv3_status1`
+    FOREIGN KEY (`taskStatus`)
+    REFERENCES `ssa2db`.`status` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+-- Drop and create collaborator table
+DROP TABLE IF EXISTS `ssa2db`.`collaborator`;
+CREATE TABLE IF NOT EXISTS `ssa2db`.`collaborator` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `oid` VARCHAR(36) NOT NULL, 
+  `name` VARCHAR(100) NOT NULL, 
+  `email` VARCHAR(50) NOT NULL,  
+  `boardId` VARCHAR(10) NOT NULL,
+  `accessRight` ENUM('READ', 'WRITE') NOT NULL DEFAULT 'READ',
+  `addedOn` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status`ENUM('PENDING', 'ACCEPTED') NOT NULL DEFAULT 'PENDING',
+  PRIMARY KEY (`id`),  
+  INDEX `fk_collaborator_board_idx` (`boardId` ASC),
+  CONSTRAINT `fk_collaborator_board`
+    FOREIGN KEY (`boardId`)
+    REFERENCES `ssa2db`.`board` (`idboard`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+-- Insert initial statuses into status table
+INSERT INTO `ssa2db`.`status` (`statusName`, `statusDescription`, `limitMaximumTask`, `maxTaskLimit`, `boardId`)
+VALUES
+  ('No Status', 'No specific status assigned.', NULL, NULL, NULL),
+  ('To Do', 'Task is planned but not started yet.', NULL, NULL, NULL),
+  ('Doing', 'Task is currently being worked on.', NULL, NULL, NULL),
+  ('Done', 'Task has been completed.', NULL, NULL, NULL);
+COMMIT;
